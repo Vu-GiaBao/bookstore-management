@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.Insets?>
+
+<BorderPane xmlns="http://javafx.com/javafx/8.0.171"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.bookstore.controller.MainController"
+            stylesheets="@application.css">
+
+    <!-- ================= TOP BAR ================= -->
+    <top>
+        <HBox style="-fx-background-color: #1A73E8; -fx-padding: 12; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 6, 0, 0, 2);">
+            <Label text="📚 Bookstore Management System"
+                   style="-fx-text-fill: white; -fx-font-size: 22; -fx-font-weight: bold;"/>
+        </HBox>
+    </top>
+
+    <!-- ================= SIDEBAR ================= -->
+    <left>
+        <VBox prefWidth="220" spacing="8" style="-fx-background-color: #F5F7FA;">
+            <padding>
+                <Insets top="20" right="10" bottom="20" left="10"/>
+            </padding>
+
+            <Label text="Navigation"
+                   style="-fx-font-size: 14; -fx-font-weight: bold; -fx-text-fill: #555;" />
+
+            <Button text="🏠 Dashboard" styleClass="sidebar-button" onAction="#openDashboard"/>
+            <Button text="📘 Books" styleClass="sidebar-button" onAction="#openBooks"/>
+            <Button text="👤 Customers" styleClass="sidebar-button" disable="true"/>
+            <Button text="🧾 Orders" styleClass="sidebar-button" disable="true"/>
+        </VBox>
+    </left>
+
+    <!-- ================= MAIN CONTENT AREA ================= -->
+    <center>
+        <AnchorPane fx:id="contentArea"/>
+    </center>
+
+</BorderPane>
