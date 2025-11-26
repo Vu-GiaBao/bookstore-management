@@ -65,7 +65,7 @@ public class CustomerService {
 
     public void removeCustomer(int id) {
         customers.removeIf(c->c.getId() == id);
-        Systom.out.println("Customer with ID: " + id + " is removed successfully!");
+        System.out.println("Customer with ID: " + id + " is removed successfully!");
     }
 
     

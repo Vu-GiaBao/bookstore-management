@@ -1,6 +1,6 @@
 package com.bookstore.model;
 
-import java.util.LocalDate;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 

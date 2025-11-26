@@ -27,6 +27,17 @@ public class InvoiceItem {
         return price;
     }
 
+
+    public void updateQuantity(int newQuantity) {
+        if (newQuantity <= 0) {
+            System.out.println("Quantity must be greater than 0");
+            return;
+        }
+        this.quantity = newQuantity;
+        this.price = book.getPrice() * newQuantity;
+    }
+
+
     public void displayInfo() {
         System.out.println("--- Invoice Item Information ---");
         System.out.println("Book: " + book);
