@@ -101,35 +101,9 @@ public class BookService {
     }
 
 
-    public void saveToFile(String filename) {
-        try (BufferedWriter bw = new BufferedWriter(new FileWriter(filename))) {
-            for (Book b: books) {
-                bw.write(b.toString());
-                bw.newLine();
-            }
-            System.out.println("Books saved!");
-        } catch (IOException e) {
-            System.out.println("Error saving file: " + e.getMessage());
-        }
-    }
-
-
-    public void loadFromFile(String filename) {
-        books.clear();
-        try (BufferedReader br = new BufferedReader(new FileReader(filename))) {
-            String line;
-            while ((line = br.readLine()) != null) {
-                String[] data = line.split(", ");
-                books.add(new Book(Integer.parseInt(data[0]),
-                                data[1],
-                                data[2],
-                                Double.parseDouble(data[3]),
-                                Integer.parseInt(data[4])
-                        ));
-            }
-            System.out.println("Books loaded!");
-        } catch (IOException e) {
-            System.out.println("Error loading file: File not found or empty");
+    public void displayBook() {
+        for (Book b: books) {
+            System.out.println(b);
         }
     }
 }

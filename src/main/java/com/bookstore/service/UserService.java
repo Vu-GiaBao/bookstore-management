@@ -77,7 +77,7 @@ public class UserService {
         System.out.println("User with ID: " + userid + " is removed successfully");
     }
 
-    public void displayAll() {
+    public void displayUser() {
         for (User u: users) {
             System.out.println(u);
         }

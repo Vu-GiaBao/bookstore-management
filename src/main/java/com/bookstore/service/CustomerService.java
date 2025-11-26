@@ -69,7 +69,7 @@ public class CustomerService {
     }
 
     
-    public void displayAll() {
+    public void displayCustomer() {
         for (Customer c : customers) {
             System.out.println(c);
         }
