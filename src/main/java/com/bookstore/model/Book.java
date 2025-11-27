@@ -1,5 +1,7 @@
 package com.bookstore.model;
 
+import javafx.beans.property.*;
+
 public class Book {
     private int id;
     private String title;
@@ -7,15 +9,12 @@ public class Book {
     private double price;
     private int quantity;
 
-
-    public Book(int id, String title, String author, double price, int quantity) {
-        this.id = id;
-        this.title = title;
-        this.author = author;
-        this.price = price;
-        this.quantity = quantity;
+    public Book(int id, String title, String author, double price) {
+        this.id.set(id);
+        this.title.set(title);
+        this.author.set(author);
+        this.price.set(price);
     }
-
 
     public int getId() {
         return id;
@@ -54,16 +53,9 @@ public class Book {
 
     
     public void displayInfo() {
-        System.out.println("--- Book Information ---");
-        System.out.println("ID: " + id);
-        System.out.println("Title: " + title);
-        System.out.println("Author: " + author);
-        System.out.println("Price: $" + price);
-        System.out.println("Stock: " + quantity);
+        System.out.println("[" + id + "]" + " " + title + " by " + author + " | $: " + price + " | Stock: " + quantity );
     }
-   
-   
     public String toString() {
-        return id + " | " + title + " | " + author + " | " + price + "$" + " | " + "Stock: " + quantity;
+        return id + " - " + title + " - " + author + " - " + price + "$" + " - " + "Stock: " + quantity;
     }
 }

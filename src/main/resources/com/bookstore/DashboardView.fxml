@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+
+<VBox xmlns="http://javafx.com/javafx/21"
+      xmlns:fx="http://javafx.com/fxml/1"
+      spacing="20">
+
+    <padding>
+        <Insets top="20" right="20" bottom="20" left="20"/>
+    </padding>
+
+    <Label text="📊 Dashboard"
+           style="-fx-font-size: 22; -fx-font-weight: bold;" />
+
+    <HBox spacing="20">
+
+        <VBox style="-fx-background-color: #F2F6FC; -fx-padding: 20; -fx-background-radius: 10; -fx-pref-width: 200;">
+            <Label text="📚 Total Books"
+                   style="-fx-font-size: 16; -fx-font-weight: bold;" />
+            <Label fx:id="lblBooks" text="0"
+                   style="-fx-font-size: 28; -fx-font-weight: bold;" />
+        </VBox>
+
+        <VBox style="-fx-background-color: #F2F6FC; -fx-padding: 20; -fx-background-radius: 10; -fx-pref-width: 200;">
+            <Label text="📦 Orders"
+                   style="-fx-font-size: 16; -fx-font-weight: bold;" />
+            <Label text="Coming soon..." />
+        </VBox>
+
+        <VBox style="-fx-background-color: #F2F6FC; -fx-padding: 20; -fx-background-radius: 10; -fx-pref-width: 200;">
+            <Label text="👥 Customers"
+                   style="-fx-font-size: 16; -fx-font-weight: bold;" />
+            <Label text="Coming soon..." />
+        </VBox>
+
+    </HBox>
+
+</VBox>

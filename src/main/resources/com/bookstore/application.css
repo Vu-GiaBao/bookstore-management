@@ -1,0 +1,47 @@
+/* Sidebar Buttons */
+.sidebar-button {
+    -fx-background-color: transparent;
+    -fx-font-size: 15px;
+    -fx-text-fill: #333;
+    -fx-padding: 10 15;
+    -fx-background-radius: 8;
+}
+
+.sidebar-button:hover {
+    -fx-background-color: #E3EBF5;
+}
+
+.sidebar-button:pressed {
+    -fx-background-color: #C8D7EE;
+}
+
+/* Table Styling */
+.table-view {
+    -fx-background-color: white;
+    -fx-border-color: #ddd;
+}
+
+.table-view .column-header {
+    -fx-background-color: #EEF2F7;
+    -fx-font-weight: bold;
+}
+
+.button-primary {
+    -fx-background-color: #1A73E8;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 6;
+}
+
+.button-primary:hover {
+    -fx-background-color: #1765C4;
+}
+
+.button-danger {
+    -fx-background-color: #E53935;
+    -fx-text-fill: white;
+}
+
+.button-danger:hover {
+    -fx-background-color: #C62828;
+}
