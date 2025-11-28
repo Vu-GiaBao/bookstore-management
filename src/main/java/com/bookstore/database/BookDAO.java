@@ -104,7 +104,6 @@ public class BookDAO extends abstractGenericDAO<Book> {
         // The underlying Connection is shared by the active Transaction and must be managed/closed by the calling Service Layer.
         return ps.executeUpdate();
     }
-}
 
     public int insert(Book entity){
         Connection connection = null;
