@@ -5,7 +5,7 @@ import bookstore.exception.DatabaseConnectionException;
 import java.sql.*;
 import java.util.ArrayList;
 
-public class BookDAO extends abstractGenericDAO<Book> z{
+public class BookDAO extends abstractGenericDAO<Book> {
     
     public Book findByID(int id){
         Connection connection = null;
@@ -28,6 +28,68 @@ public class BookDAO extends abstractGenericDAO<Book> z{
         } finally { closeConnection(connection); }
         return book;
     }
+
+    public ArrayList<Book> findbyTitle(String title) {
+        Connection connection = null;
+        ArrayList<Book> bookList = new ArrayList<>();
+        
+        try {
+            connection = dbconnection.connectDatabase();
+            // SQL Search: Utilize the LIKE operator for fuzzy/partial-match querying on the title field.
+            String sql = "SELECT * FROM Book WHERE title LIKE ?"; 
+            PreparedStatement ps = connection.prepareStatement(sql);
+            
+            // Parameter Binding: Concatenate the search term with the SQL wildcard characters for fuzzy matching
+            ps.setString(1, "%" + title + "%"); 
+            
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                bookList.add(new Book(
+                    rs.getInt("id"), rs.getString("title"), rs.getString("author"),
+                    rs.getDouble("price"), rs.getInt("quantity")
+                ));
+            }
+        }
+        catch (SQLException | DatabaseConnectionException e) {
+            System.err.println("Error: " + (e instanceof SQLException ? SQLExceptionHandler((SQLException)e) : e.getMessage()));
+        }
+        finally {
+            closeConnection(connection);
+        }
+        return bookList;
+    }
+
+    public ArrayList<Book> findbyAuthor(String author) {
+        Connection connection = null;
+        ArrayList<Book> bookList = new ArrayList<>();
+        
+        try {
+            connection = dbconnection.connectDatabase();
+            // SQL Search: Utilize the LIKE operator for fuzzy/partial-match querying on the author name field.
+            String sql = "SELECT * FROM Book WHERE author LIKE ?"; 
+            PreparedStatement ps = connection.prepareStatement(sql);
+            
+            ps.setString(1, "%" + author + "%"); 
+            
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                bookList.add(new Book(
+                    rs.getInt("id"), rs.getString("title"), rs.getString("author"),
+                    rs.getDouble("price"), rs.getInt("quantity")
+                ));
+            }
+        }
+        catch (SQLException | DatabaseConnectionException e) {
+            System.err.println("Error: " + (e instanceof SQLException ? SQLExceptionHandler((SQLException)e) : e.getMessage()));
+        }
+        finally {
+            closeConnection(connection);
+        }
+        return bookList;
+    }
+    
 
     public int insert(Book entity){
         Connection connection = null;

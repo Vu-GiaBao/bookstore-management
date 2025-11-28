@@ -1,13 +1,20 @@
 package com.bookstore.service;
 
+import com.bookstore.database.InvoiceDAO;
+import com.bookstore.database.InvoiceItemDAO;
 import com.bookstore.model.Book;
 import com.bookstore.model.Invoice;
 import com.bookstore.model.InvoiceItem;
 import com.bookstore.model.InvoiceStatus;
 
+import java.util.Iterator;
 import java.util.UUID;
 
 public class InvoiceService {
+    private final InvoiceDAO invoiceDAO = new InvoiceDAO();
+    private final InvoiceItemDAO invoiceItemDAO = new InvoiceItemDAO();
+
+
     public Invoice createInvoice() {
         String randomId = UUID.randomUUID().toString();  
         return new Invoice(randomId);
@@ -23,8 +30,7 @@ public class InvoiceService {
             System.out.println("Error! Quantity must be greater than 0.");
             return;
         }
-        InvoiceItem item = new InvoiceItem(book, quantity);
-        invoice.getItems().add(item);
+        invoice.getItems().add(new InvoiceItem(book, quantity));
         System.out.println("Added: " + book.getTitle() + " x" + quantity);
     }
 
@@ -81,12 +87,42 @@ public class InvoiceService {
             System.out.println("Error! Invoice has been paid before.");
             return;
         }
+        for (InvoiceItem item : invoice.getItems()) {
+            Book book = item.getBook();
+            if (book.getQuantity() < item.getQuantity()) {
+                System.out.println("Error! Stock changed, not enough for: " + book.getTitle()
+                        + " (available " + book.getQuantity() + ")");
+                return;
+            }
+        }
+        calculateTotal(invoice);
         invoice.setStatus(InvoiceStatus.PAID);
+        int invoiceRows = invoiceDAO.insert(invoice);
+        if (invoiceRows <= 0) {
+            System.out.println("Payment failed! Could not insert Invoice to DB.");
+            return;
+        }
+        int[] itemRows = invoiceItemDAO.insertBatch(invoice.getInvoiceId(), invoice.getItems());
+        if (itemRows == null || itemRows.length == 0) {
+            System.out.println("Payment warning: Invoice inserted but items were not inserted.");
+            return;
+        }
+        for (InvoiceItem item : invoice.getItems()) {
+            Book book = item.getBook();
+            int qty = item.getQuantity();
+            book.setQuantity(book.getQuantity() - qty);
+        }
         System.out.println("Paid successfully!");
     }
 
 
-    public void displayInvoice(Invoice invoice) {
-        System.out.println(invoice);
+    public void displayInvoiceFromDB(String invoiceId) {
+        Invoice invoice = invoiceDAO.findByID(invoiceId); 
+        if (invoice == null) {
+            System.out.println("Invoice not found!");
+            return;
+        }
+        invoice.setItems(invoiceItemDAO.findByInvoiceID(invoiceId));
+        invoice.displayInfo();
     }
 }

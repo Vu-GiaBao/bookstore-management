@@ -1,118 +1,115 @@
 package com.bookstore.service;
 
+import com.bookstore.database.BookDAO;
 import com.bookstore.model.Book;
-import java.util.*;
+
 import java.util.ArrayList;
-import java.io.*;
 
 public class BookService {
-    private ArrayList<Book> books = new ArrayList<>();
+    private final BookDAO bookDAO = new BookDAO();
 
-    public void addBooks(Book b) {
-        books.add(b);
-        System.out.println("Book added!");
+
+    public void addBook(Book b) {
+        if (b == null) {
+            System.out.println("Error! Book is null.");
+            return;
+        }
+        int result = bookDAO.insert(b);
+        if (result > 0) {
+            System.out.println("Added successfully!");
+        } else {
+            System.out.println("Add failed!");
+        } 
     }
+
 
     public void displayBooks() {
+        ArrayList<Book> books = bookDAO.getAll(); 
         if (books.isEmpty()) {
             System.out.println("No book available!");
+            return;
         }
-        System.out.println("\nBook List: ");
-        for (Book b: books) {
-            b.displayInfo();
+        System.out.println("\nBook List:");
+        for (Book b : books) {  
+            b.displayInfo();             
         }
     }
 
-    public Book searchBookbyId(int id) {
-        for (Book b: books) {
-            if (b.getId() == id) {
-                System.out.print("Book with id: " + id + " is ");
-                return b;
-            }
+
+    public Book searchBookById(int id) {
+        Book b = bookDAO.findByID(id);  
+        if (b != null) {
+            System.out.println("Book with id: " + id + " is: " + b);
+        } else {
+            System.out.println("Book not found!");
         }
-        System.out.println("Book not found!");
-        return null;
+        return b;
     }
+
 
     public ArrayList<Book> searchBookbyTitle(String title) {
-        ArrayList<Book> results = new ArrayList<>();
-        for (Book b: books) {
-            if (b.getTitle().toLowerCase().contains(title.toLowerCase())) {
-                results.add(b);
-            }
-        }
+        ArrayList<Book> results = bookDAO.findbyTitle(title); 
         if (results.isEmpty()) {
             System.out.println("Book not found!");
         } else {
-            System.out.println("Book with title: " + title + " is ");
-            for (Book b: results) {
+            System.out.println("Book with title: " + title);
+            for (Book b : results) {
                 b.displayInfo();
             }
         }
         return results;
     }
+
 
     public ArrayList<Book> searchBookbyAuthor(String author) {
-        ArrayList<Book> results = new ArrayList<>();
-        for (Book b: books) {
-            if (b.getAuthor().toLowerCase().contains(author.toLowerCase())) {
-                results.add(b);
-            }
-        }
+        ArrayList<Book> results = bookDAO.findbyAuthor(author);
+
         if (results.isEmpty()) {
             System.out.println("Book not found!");
         } else {
-            System.out.println("Book with author: " + author + " is ");
-            for (Book b: results) {
+            System.out.println("Books with author: " + author);
+            for (Book b : results) {
                 b.displayInfo();
             }
         }
         return results;
     }
 
+
     public void updateBook(int id, double newPrice, int newQuantity) {
-        Book b = searchBookbyId(id);
-        if (b != null) {
-            b.setPrice(newPrice);
-            b.setQuantity(newQuantity);
+        Book b = bookDAO.findByID(id); 
+        if (b == null) {
+            System.out.println("Book not found!");
+            return;
+        }
+        b.setPrice(newPrice);
+        b.setQuantity(newQuantity);
+        int updated = bookDAO.update(b); 
+        if (updated > 0) {
             System.out.println("Book is updated successfully!");
             b.displayInfo();
+        } else {
+            System.out.println("Update failed!");
         }
     }
 
 
-    public void deleteBook(Book book) {
-        books.remove(book);
-    }
-
-    public void saveToFile(String filename) {
-        try (BufferedWriter bw = new BufferedWriter(new FileWriter(filename))) {
-            for (Book b: books) {
-                bw.write(b.toString());
-                bw.newLine();
-            }
-            System.out.println("Books saved!");
-        } catch (IOException e) {
-            System.out.println("Error saving file: " + e.getMessage());
+    public boolean deleteBookById(int id) {
+        int deleted = bookDAO.delete(id);
+        if (deleted > 0) {
+            System.out.println("Delete successfully!");
+            return true;
+        } else {
+            System.out.println("Delete failed / Book not found!");
+            return false;
         }
     }
 
-    public void loadFromFile(String filename) {
-        books.clear();
-        try (BufferedReader br = new BufferedReader(new FileReader(filename))) {
-            String line;
-            while ((line = br.readLine()) != null) {
-                String[] data = line.split(", ");
-                books.add(new Book(Integer.parseInt(data[0]),
-                                data[1],
-                                data[2],
-                                Double.parseDouble(data[3]),
-                                Integer.parseInt(data[4])
-                        ));
-            }
-            System.out.println("Books loaded!");
-        } catch (IOException e) {
-            System.out.println("Error loading file: File not found or empty");
+
+    public int reduceStockTx(int bookId, int quantityToReduce, Connection conn) throws SQLException {
+        if (quantityToReduce <= 0) {
+            return 0;
         }
-    }
+        return bookDAO.reduceStock(bookId, quantityToReduce, conn);
+    }   
 }

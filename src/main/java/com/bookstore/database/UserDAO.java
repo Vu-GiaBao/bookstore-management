@@ -120,4 +120,24 @@ public class UserDAO extends abstractGenericDAO<User> {
         } finally { closeConnection(connection); }
         return deletedRow;
     }
+
+    public ArrayList<User> getAll(){
+        Connection connection = null;
+        ArrayList<User> user_list = new ArrayList<>();
+        try {
+            connection = dbconnection.connectDatabase();
+            String sql = "SELECT * FROM User";
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                user_list.add(new User(
+                    rs.getString("id"), rs.getString("username"), rs.getString("password"),
+                    rs.getString("role"), rs.getInt("salary")
+                ));
+            }
+        } catch (SQLException | DatabaseConnectionException e) {
+            System.err.println("Error: " + (e instanceof SQLException ? SQLExceptionHandler((SQLException)e) : e.getMessage()));
+        } finally { closeConnection(connection); }
+        return user_list;
+    }
 }
