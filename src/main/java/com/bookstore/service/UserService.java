@@ -1,86 +1,134 @@
 package com.bookstore.service;
 
+import com.bookstore.database.UserDAO;
 import com.bookstore.model.User;
 
 import java.util.*;
 
 public class UserService {
-    private ArrayList<User> users = new ArrayList<>();
+    private final UserDAO userDAO = new UserDAO();
 
 
-    public void addUser(User u) {
-        users.add(u);
+   public void addUser(User u) {
+        if (u == null) {
+            System.out.println("Error! User is null.");
+            return;
+        }
+        int rows = userDAO.insert(u);
+        if (rows > 0) {
+            System.out.println("Added successfully!");
+        } else {
+            System.out.println("Add failed!");
+        } 
     }
 
 
     public User login(String username, String password) {
-        for (User u : users) {
-            if (u.getUsername().equals(username) && u.login(password)) {
-                return u;   
-            }
+        if (username == null || username.isBlank() || password == null) {
+            return null;
         }
-        return null; 
-    }
-
-
-    public User searchByUserId(String userid) {
-        for (User u : users) {
-            if (u.getUserid().equals(userid)) {
-                return u;
-            }
+        User u = userDAO.findByUsername(username);
+        if (u != null && u.login(password)) {
+            return u;
         }
         return null;
     }
 
 
-    public User searchByUserName(String username) {
-        for (User u: users) {
-            if (u.getUsername.equals(username)) {
-                return u;
-            }
+    public User searchByUserId(String userid) {
+        if (userid == null || userid.isBlank()) {
+            return null;
         }
+        return userDAO.findByID(userid); 
     }
 
+
+    public User searchByUserName(String username) {
+        if (username == null || username.isBlank()) {
+            return null;
+        }
+        return userDAO.findByUsername(username); 
+    }
+
+
     public void changeUsername(String userid, String password, String newUsername) {
-        User u = searchByUserId(userid);
+        if (newUsername == null || newUsername.isBlank()) {
+            System.out.println("Error! New username is empty.");
+            return;
+        }
+        User u = userDAO.findByID(userid);
         if (u != null && u.login(password)) {
             u.setUsername(newUsername);
-            System.out.println("Username updated successfully!");
+            int rows = userDAO.update(u); 
+            if (rows > 0) {
+                System.out.println("Username updated successfully!");
+            } else {
+                System.out.println("Username update failed!");
+            }
         } else {
-            System.out.println("Error! Username not found or Password incorrect. Try again!");
+            System.out.println("Error! User not found or Password incorrect. Try again!");
         }
     }
 
 
     public void changePassword(String userid, String oldPassword, String newPassword) {
-        User u = searchByUserId(userid);
+        if (newPassword == null || newPassword.isBlank()) {
+            System.out.println("Error! New password is empty.");
+            return;
+        }
+        User u = userDAO.findByID(userid);
         if (u != null && u.login(oldPassword)) {
-            u.setPassword(newPassword);
+            int rows = userDAO.updatePassword(userid, newPassword);
+            if (rows > 0) {
+                System.out.println("Password updated successfully!");
+            } else {
+                System.out.println("Password update failed!");
+            }
         } else {
-            System.out.println("Error! Username not found or Password incorrect. Try again!");
+            System.out.println("Error! User not found or Password incorrect. Try again!");
         }
     }
 
 
     public void updateUser(String userid, String newRole, int newSalary) {
-        User u = searchByUserId(userid);
-        if (u != null) {
-            if (newRole != null) u.setRole(newRole);
-            if (newSalary > 0) u.setSalary(newSalary);
-            System.out.println("Updated successfully!");
+        User u = userDAO.findByID(userid);
+        if (u == null) {
+            System.out.println("User not found!");
+            return;
         }
+        if (newRole != null && !newRole.isBlank()) {
+            u.setRole(newRole);
+        }
+        if (newSalary > 0) {
+            u.setSalary(newSalary);
+        }
+        int rows = userDAO.update(u); 
+        if (rows > 0) {
+            System.out.println("Updated successfully!");
+        } else {
+            System.out.println("Update failed!");
+        }         
     }
 
 
     public void removeUser(String userid) {
-        users.removeI(u->u.getUserid() == userid);
-        System.out.println("User with ID: " + userid + " is removed successfully");
-    }
-
-    public void displayUser() {
-        for (User u: users) {
-            System.out.println(u);
+        int rows = userDAO.delete(userid); 
+        if (rows > 0) {
+            System.out.println("User with ID: " + userid + " is removed successfully");
+        } else {
+            System.out.println("Remove failed (user not found?)");
         }
     }
 
+
+    public void displayUse() {
+        ArrayList<Customer> list = userDAO.getAll();
+        if (list == null || list.isEmpty()) {
+            System.out.println("No user found!");
+            return;
+        }
+        for (Customer c : list) {
+            System.out.println(c);
+        }
+    }
 }

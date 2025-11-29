@@ -1,4 +1,4 @@
-package bookstore.database;
+package com.bookstore.database;
 
 import java.sql.Connection;
 import java.sql.SQLException;

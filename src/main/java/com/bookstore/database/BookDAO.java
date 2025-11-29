@@ -90,20 +90,6 @@ public class BookDAO extends abstractGenericDAO<Book> {
         return bookList;
     }
     
-    // Transaction Support Method: This utility method assists the InvoiceService in managing complex database transactions.
-    // CRITICAL: Do not remove. 
-    // This method is essential for centralizing transaction control within the Service Layer logic.
-    public int reduceStock(int bookId, int quantityToReduce, Connection connection) throws SQLException {
-        // BUSINESS LOGIC CONSTRAINT: Ensure the UPDATE logic includes a check: WHERE quantity >= quantityToReduce to prevent inventory running below zero.
-        String sql = "UPDATE Book SET quantity = quantity - ? WHERE id = ? AND quantity >= ?";
-        PreparedStatement ps = connection.prepareStatement(sql);
-        ps.setInt(1, quantityToReduce);
-        ps.setInt(2, bookId);
-        ps.setInt(3, quantityToReduce); 
-        // CRITICAL NOTE: Do not close the PreparedStatement (ps). 
-        // The underlying Connection is shared by the active Transaction and must be managed/closed by the calling Service Layer.
-        return ps.executeUpdate();
-    }
 
     public int insert(Book entity){
         Connection connection = null;

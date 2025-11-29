@@ -9,12 +9,15 @@ public class Book {
     private double price;
     private int quantity;
 
-    public Book(int id, String title, String author, double price) {
-        this.id.set(id);
-        this.title.set(title);
-        this.author.set(author);
-        this.price.set(price);
+    
+    public Book(int id, String title, String author, double price, int quantity) {
+        this.id = id;
+        this.title = title;
+        this.author = author;
+        this.price = price;
+        this.quantity = quantity;
     }
+
 
     public int getId() {
         return id;
@@ -23,12 +26,14 @@ public class Book {
         this.id = id;
     }
 
+
     public String getTitle() {
         return title;
     }
     public void setTitle(String title) {
         this.title = title;
     }
+
 
     public String getAuthor() {
         return author;
@@ -37,12 +42,14 @@ public class Book {
         this.author = author;
     }
 
+
     public double getPrice() {
         return price;
     }
     public void setPrice(double price) {
         this.price = price;
     }
+
 
     public int getQuantity() {
         return quantity;
@@ -53,9 +60,16 @@ public class Book {
 
     
     public void displayInfo() {
-        System.out.println("[" + id + "]" + " " + title + " by " + author + " | $: " + price + " | Stock: " + quantity );
+        System.out.println("--- Book Information ---");
+        System.out.println("ID: " + id);
+        System.out.println("Title: " + title);
+        System.out.println("Author: " + author);
+        System.out.println("Price: $" + price);
+        System.out.println("Stock: " + quantity);
     }
+
+
     public String toString() {
-        return id + " - " + title + " - " + author + " - " + price + "$" + " - " + "Stock: " + quantity;
+        return id + " | " + title + " | " + author + " | $" + price + " | " + "Stock: " + quantity;
     }
 }

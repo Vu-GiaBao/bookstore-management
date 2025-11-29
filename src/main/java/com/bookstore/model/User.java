@@ -21,12 +21,14 @@ public class User {
         return userid; 
     }
 
+
     public String getUsername() { 
         return username; 
     }
     public void setUsername(String username) {
         this.username = username;
     }
+
 
     public String getPassword() { 
         return password; 
@@ -35,12 +37,14 @@ public class User {
         this.password = password;
     }
 
+
     public String getRole() { 
         return role; 
     }
     public void setRole(String role) {
         this.role = role;
     }
+
 
     public int getSalary() { 
         return salary; 
@@ -54,6 +58,7 @@ public class User {
         return this.password.equals(password);
     }
 
+    
     public void logout() {
         System.out.println(username + " has been logged out.");
     }

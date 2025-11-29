@@ -29,6 +29,97 @@ public class CustomerDAO extends abstractGenericDAO<Customer> {
         return customer;
     }
     
+    public ArrayList<Customer> findbyName(String name) throws DatabaseConnectionException {
+        ArrayList<Customer> customerList = new ArrayList<>();
+        // SQL Search: Utilize the LIKE operator with wildcards for fuzzy/partial-match querying.
+        String sql = "SELECT * FROM Customer WHERE name LIKE ?";
+        
+        try (Connection connection = dbconnection.connectDatabase();
+             PreparedStatement ps = connection.prepareStatement(sql)) {
+            
+            // Parameter Binding: Concatenate the search term with the SQL wildcard characters for fuzzy matching.
+            ps.setString(1, "%" + name + "%");
+            
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    customerList.add(new Customer(
+                        rs.getInt("id"), rs.getString("name"), 
+                        rs.getString("email"), rs.getString("phone")
+                    ));
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Error: " + SQLExceptionHandler(e));
+        }
+        return customerList;
+    }
+
+    public Customer findbyEmail(String email) throws DatabaseConnectionException {
+        Customer customer = null;
+        String sql = "SELECT * FROM Customer WHERE email = ?";
+        
+        try (Connection connection = dbconnection.connectDatabase();
+             PreparedStatement ps = connection.prepareStatement(sql)) {
+            
+            ps.setString(1, email);
+            
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    customer = new Customer(
+                        rs.getInt("id"), rs.getString("name"), 
+                        rs.getString("email"), rs.getString("phone")
+                    );
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Error: " + SQLExceptionHandler(e));
+        }
+        return customer;
+    }
+
+    public Customer findbyPhone(String phone) throws DatabaseConnectionException {
+        Customer customer = null;
+        String sql = "SELECT * FROM Customer WHERE phone = ?";
+        
+        try (Connection connection = dbconnection.connectDatabase();
+             PreparedStatement ps = connection.prepareStatement(sql)) {
+            
+            ps.setString(1, phone);
+            
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    customer = new Customer(
+                        rs.getInt("id"), rs.getString("name"), 
+                        rs.getString("email"), rs.getString("phone")
+                    );
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Error: " + SQLExceptionHandler(e));
+        }
+        return customer;
+    }
+
+    public ArrayList<Customer> getAll() throws DatabaseConnectionException {
+        ArrayList<Customer> customerList = new ArrayList<>();
+        String sql = "SELECT * FROM Customer";
+        
+        try (Connection connection = dbconnection.connectDatabase();
+             PreparedStatement ps = connection.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) { // Utilize try-with-resources to automatically manage the closing of Connection, PreparedStatement (ps), and ResultSet (rs).
+            
+            while (rs.next()) {
+                customerList.add(new Customer(
+                    rs.getInt("id"), rs.getString("name"), 
+                    rs.getString("email"), rs.getString("phone")
+                ));
+            }
+        } catch (SQLException e) {
+            System.err.println("Error: " + SQLExceptionHandler(e));
+        }
+        return customerList;
+    }
+
     public int insert(Customer entity){
         Connection connection = null;
         int addedRow = 0;

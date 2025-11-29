@@ -1,4 +1,4 @@
-package bookstore.database;
+package com.bookstore.database;
 
 import com.bookstore.model.InvoiceItem;
 import java.sql.*;
