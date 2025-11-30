@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.control.*?>
+
+<VBox xmlns="http://javafx.com/javafx/8.0.171"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.bookstore.controller.CustomersController">
+
+    <Label text="Customers Management" style="-fx-font-size: 20; -fx-font-weight: bold"/>
+
+    <HBox spacing="10">
+        <TextField fx:id="searchField" promptText="Search by name..."/>
+        <Button text="Search" onAction="#onSearch"/>
+        <Button text="Add" onAction="#onAddCustomer"/>
+        <Button text="Refresh" onAction="#onRefresh"/>
+    </HBox>
+
+    <TableView fx:id="customerTable">
+        <columns>
+            <TableColumn fx:id="colId" text="ID" prefWidth="50"/>
+            <TableColumn fx:id="colName" text="Name" prefWidth="150"/>
+            <TableColumn fx:id="colEmail" text="Email" prefWidth="200"/>
+            <TableColumn fx:id="colPhone" text="Phone" prefWidth="120"/>
+            <TableColumn fx:id="colAddress" text="Address" prefWidth="200"/>
+            <TableColumn fx:id="colAction" text="Actions" prefWidth="150"/>
+        </columns>
+    </TableView>
+
+</VBox>

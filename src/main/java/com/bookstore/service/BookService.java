@@ -3,113 +3,72 @@ package com.bookstore.service;
 import com.bookstore.database.BookDAO;
 import com.bookstore.model.Book;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class BookService {
     private final BookDAO bookDAO = new BookDAO();
 
-
-    public void addBook(Book b) {
-        if (b == null) {
-            System.out.println("Error! Book is null.");
-            return;
+    public int addBook(Book book) {
+        if (book == null) {
+            return 0;
         }
-        int result = bookDAO.insert(b);
-        if (result > 0) {
-            System.out.println("Added successfully!");
-        } else {
-            System.out.println("Add failed!");
-        } 
+        return bookDAO.insert(book);
     }
 
-
-    public void displayBooks() {
-        ArrayList<Book> books = bookDAO.getAll(); 
-        if (books.isEmpty()) {
-            System.out.println("No book available!");
-            return;
-        }
-        System.out.println("\nBook List:");
-        for (Book b : books) {  
-            b.displayInfo();             
-        }
+    public List<Book> getAllBooks() {
+        return bookDAO.getAll();
     }
 
-
-    public Book searchBookById(int id) {
-        Book b = bookDAO.findByID(id);  
-        if (b != null) {
-            System.out.println("Book with id: " + id + " is: " + b);
-        } else {
-            System.out.println("Book not found!");
-        }
-        return b;
+    public Book getBookById(int id) {
+        return bookDAO.findById(id);
     }
 
-
-    public ArrayList<Book> searchBookbyTitle(String title) {
-        ArrayList<Book> results = bookDAO.findbyTitle(title); 
-        if (results.isEmpty()) {
-            System.out.println("Book not found!");
-        } else {
-            System.out.println("Book with title: " + title);
-            for (Book b : results) {
-                b.displayInfo();
-            }
-        }
-        return results;
+    public List<Book> getBooksByTitle(String title) {
+        return bookDAO.findByTitle(title);
     }
 
-
-    public ArrayList<Book> searchBookbyAuthor(String author) {
-        ArrayList<Book> results = bookDAO.findbyAuthor(author);
-
-        if (results.isEmpty()) {
-            System.out.println("Book not found!");
-        } else {
-            System.out.println("Books with author: " + author);
-            for (Book b : results) {
-                b.displayInfo();
-            }
-        }
-        return results;
+    public List<Book> getBooksByAuthor(String author) {
+        return bookDAO.findByAuthor(author);
     }
 
-
-    public void updateBook(int id, double newPrice, int newQuantity) {
-        Book b = bookDAO.findByID(id); 
-        if (b == null) {
-            System.out.println("Book not found!");
-            return;
+    public boolean updateBook(Book book) {
+        if (book == null) {
+            return false;
         }
-        b.setPrice(newPrice);
-        b.setQuantity(newQuantity);
-        int updated = bookDAO.update(b); 
-        if (updated > 0) {
-            System.out.println("Book is updated successfully!");
-            b.displayInfo();
-        } else {
-            System.out.println("Update failed!");
-        }
+        return bookDAO.update(book) > 0;
     }
 
+    public boolean deleteBook(int id) {
+        return bookDAO.delete(id) > 0;
+    }
 
-    public boolean deleteBookById(int id) {
-        int deleted = bookDAO.delete(id);
-        if (deleted > 0) {
-            System.out.println("Delete successfully!");
-            return true;
-        } else {
-            System.out.println("Delete failed / Book not found!");
+    public boolean reduceStock(int bookId, int quantityToReduce) {
+        if (quantityToReduce <= 0) {
+            return false;
+        }
+        try {
+            return bookDAO.reduceStock(bookId, quantityToReduce) > 0;
+        } catch (RuntimeException e) {
+            // In a real application, you would want to log this exception
+            e.printStackTrace();
             return false;
         }
     }
 
-
-    public int reduceStockTx(int bookId, int quantityToReduce, Connection conn) throws SQLException {
-        if (quantityToReduce <= 0) {
-            return 0;
+    public List<Book> searchBooks(String keyword) {
+        if (keyword == null || keyword.isBlank()) {
+            return getAllBooks();
         }
-        return bookDAO.reduceStock(bookId, quantityToReduce, conn);
-    }   
+        String lowerCaseKeyword = keyword.toLowerCase();
+        List<Book> booksByTitle = bookDAO.findByTitle(lowerCaseKeyword);
+        List<Book> booksByAuthor = bookDAO.findByAuthor(lowerCaseKeyword);
+
+        return Stream.concat(booksByTitle.stream(), booksByAuthor.stream())
+                .distinct()
+                .collect(Collectors.toList());
+    }
 }

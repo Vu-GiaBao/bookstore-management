@@ -26,6 +26,16 @@ public class MainController {
         loadView("/com/bookstore/BooksView.fxml");
     }
 
+    @FXML
+    private void openCustomers() {
+        loadView("/com/bookstore/CustomersView.fxml");
+    }
+
+    @FXML
+    private void openInvoices() {
+        loadView("/com/bookstore/InvoicesView.fxml");
+    }
+
     private void loadView(String path) {
         try {
             Node view = FXMLLoader.load(getClass().getResource(path));

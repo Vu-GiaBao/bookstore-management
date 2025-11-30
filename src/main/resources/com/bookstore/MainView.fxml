@@ -29,8 +29,8 @@
 
             <Button text="🏠 Dashboard" styleClass="sidebar-button" onAction="#openDashboard"/>
             <Button text="📘 Books" styleClass="sidebar-button" onAction="#openBooks"/>
-            <Button text="👤 Customers" styleClass="sidebar-button" disable="true"/>
-            <Button text="🧾 Orders" styleClass="sidebar-button" disable="true"/>
+            <Button text="👤 Customers" styleClass="sidebar-button" onAction="#openCustomers"/>
+            <Button text="🧾 Invoice" styleClass="sidebar-button" onAction="#openInvoices" />
         </VBox>
     </left>
 

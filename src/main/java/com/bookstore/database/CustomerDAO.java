@@ -1,173 +1,160 @@
-package bookstore.database;
+package com.bookstore.database;
 
 import com.bookstore.model.Customer;
-import bookstore.exception.DatabaseConnectionException;
+import com.bookstore.exception.DatabaseConnectionException;
+
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.List;
 
-public class CustomerDAO extends abstractGenericDAO<Customer> {
-    
-    public Customer findByID(int id){
-        Connection connection = null;
-        Customer customer = null;
-        try {
-            connection = dbconnection.connectDatabase();
-            String sql = "SELECT * FROM Customer WHERE id = ?";
-            PreparedStatement ps = connection.prepareStatement(sql);
-            ps.setInt(1, id); 
-            ResultSet rs = ps.executeQuery();
+public class CustomerDAO {
 
-            if (rs.next()) {
-                customer = new Customer(
-                    rs.getInt("id"), rs.getString("name"), 
-                    rs.getString("email"), rs.getString("phone")
-                );
+    public Customer findById(int id) {
+        String sql = "SELECT * FROM Customers WHERE id = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, id);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    return new Customer(
+                            rs.getInt("id"),
+                            rs.getString("name"),
+                            rs.getString("email"),
+                            rs.getString("phone"),
+                            rs.getString("address") 
+                    );
+                }
             }
         } catch (SQLException | DatabaseConnectionException e) {
-            System.err.println("Error: " + (e instanceof SQLException ? SQLExceptionHandler((SQLException)e) : e.getMessage()));
-        } finally { closeConnection(connection); }
-        return customer;
+            throw new RuntimeException("Error finding customer by id: " + id, e);
+        }
+        return null;
     }
-    
-    public ArrayList<Customer> findbyName(String name) throws DatabaseConnectionException {
-        ArrayList<Customer> customerList = new ArrayList<>();
-        // SQL Search: Utilize the LIKE operator with wildcards for fuzzy/partial-match querying.
-        String sql = "SELECT * FROM Customer WHERE name LIKE ?";
-        
-        try (Connection connection = dbconnection.connectDatabase();
-             PreparedStatement ps = connection.prepareStatement(sql)) {
-            
-            // Parameter Binding: Concatenate the search term with the SQL wildcard characters for fuzzy matching.
-            ps.setString(1, "%" + name + "%");
-            
-            try (ResultSet rs = ps.executeQuery()) {
+
+    public List<Customer> findByName(String name) {
+        List<Customer> customers = new ArrayList<>();
+        String sql = "SELECT * FROM Customers WHERE name LIKE ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, "%" + name + "%");
+            try (ResultSet rs = pstmt.executeQuery()) {
                 while (rs.next()) {
-                    customerList.add(new Customer(
-                        rs.getInt("id"), rs.getString("name"), 
-                        rs.getString("email"), rs.getString("phone")
+                    customers.add(new Customer(
+                            rs.getInt("id"),
+                            rs.getString("name"),
+                            rs.getString("email"),
+                            rs.getString("phone"),
+                            rs.getString("address")
                     ));
                 }
             }
-        } catch (SQLException e) {
-            System.err.println("Error: " + SQLExceptionHandler(e));
+        } catch (SQLException | DatabaseConnectionException e) {
+            throw new RuntimeException("Error finding customers by name: " + name, e);
         }
-        return customerList;
+        return customers;
     }
 
-    public Customer findbyEmail(String email) throws DatabaseConnectionException {
-        Customer customer = null;
-        String sql = "SELECT * FROM Customer WHERE email = ?";
-        
-        try (Connection connection = dbconnection.connectDatabase();
-             PreparedStatement ps = connection.prepareStatement(sql)) {
-            
-            ps.setString(1, email);
-            
-            try (ResultSet rs = ps.executeQuery()) {
+    public Customer findByEmail(String email) {
+        String sql = "SELECT * FROM Customers WHERE email = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, email);
+            try (ResultSet rs = pstmt.executeQuery()) {
                 if (rs.next()) {
-                    customer = new Customer(
-                        rs.getInt("id"), rs.getString("name"), 
-                        rs.getString("email"), rs.getString("phone")
+                    return new Customer(
+                            rs.getInt("id"),
+                            rs.getString("name"),
+                            rs.getString("email"),
+                            rs.getString("phone"),
+                            rs.getString("address")
                     );
                 }
             }
-        } catch (SQLException e) {
-            System.err.println("Error: " + SQLExceptionHandler(e));
+        } catch (SQLException | DatabaseConnectionException e) {
+            throw new RuntimeException("Error finding customer by email: " + email, e);
         }
-        return customer;
+        return null;
     }
 
-    public Customer findbyPhone(String phone) throws DatabaseConnectionException {
-        Customer customer = null;
-        String sql = "SELECT * FROM Customer WHERE phone = ?";
-        
-        try (Connection connection = dbconnection.connectDatabase();
-             PreparedStatement ps = connection.prepareStatement(sql)) {
-            
-            ps.setString(1, phone);
-            
-            try (ResultSet rs = ps.executeQuery()) {
+    public Customer findByPhone(String phone) {
+        String sql = "SELECT * FROM Customers WHERE phone = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, phone);
+            try (ResultSet rs = pstmt.executeQuery()) {
                 if (rs.next()) {
-                    customer = new Customer(
-                        rs.getInt("id"), rs.getString("name"), 
-                        rs.getString("email"), rs.getString("phone")
+                    return new Customer(
+                            rs.getInt("id"),
+                            rs.getString("name"),
+                            rs.getString("email"),
+                            rs.getString("phone"),
+                            rs.getString("address")
                     );
                 }
             }
-        } catch (SQLException e) {
-            System.err.println("Error: " + SQLExceptionHandler(e));
+        } catch (SQLException | DatabaseConnectionException e) {
+            throw new RuntimeException("Error finding customer by phone: " + phone, e);
         }
-        return customer;
+        return null;
     }
 
-    public ArrayList<Customer> getAll() throws DatabaseConnectionException {
-        ArrayList<Customer> customerList = new ArrayList<>();
-        String sql = "SELECT * FROM Customer";
-        
-        try (Connection connection = dbconnection.connectDatabase();
-             PreparedStatement ps = connection.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) { // Utilize try-with-resources to automatically manage the closing of Connection, PreparedStatement (ps), and ResultSet (rs).
-            
+    public List<Customer> getAll() {
+        List<Customer> customers = new ArrayList<>();
+        String sql = "SELECT * FROM Customers";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql);
+             ResultSet rs = pstmt.executeQuery()) {
             while (rs.next()) {
-                customerList.add(new Customer(
-                    rs.getInt("id"), rs.getString("name"), 
-                    rs.getString("email"), rs.getString("phone")
+                customers.add(new Customer(
+                        rs.getInt("id"),
+                        rs.getString("name"),
+                        rs.getString("email"),
+                        rs.getString("phone"),
+                        rs.getString("address")
                 ));
             }
-        } catch (SQLException e) {
-            System.err.println("Error: " + SQLExceptionHandler(e));
+        } catch (SQLException | DatabaseConnectionException e) {
+            throw new RuntimeException("Error getting all customers", e);
         }
-        return customerList;
+        return customers;
     }
 
-    public int insert(Customer entity){
-        Connection connection = null;
-        int addedRow = 0;
-        try {
-            connection = dbconnection.connectDatabase();
-            String sql = "INSERT INTO Customer(id, name, email, phone) VALUES (?,?,?,?)" ;
-            PreparedStatement ps = connection.prepareStatement(sql);
-            ps.setInt(1, entity.getId());
-            ps.setString(2, entity.getName());
-            ps.setString(3, entity.getEmail());
-            ps.setString(4, entity.getPhone());
-            addedRow = ps.executeUpdate();
+    public int insert(Customer customer) {
+        String sql = "INSERT INTO Customers(id, name, email, phone) VALUES (?,?,?,?)";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, customer.getId());
+            pstmt.setString(2, customer.getName());
+            pstmt.setString(3, customer.getEmail());
+            pstmt.setString(4, customer.getPhone());
+            return pstmt.executeUpdate();
         } catch (SQLException | DatabaseConnectionException e) {
-             System.err.println("Error: " + (e instanceof SQLException ? SQLExceptionHandler((SQLException)e) : e.getMessage()));
-        } finally { closeConnection(connection); }
-        return addedRow;
+            throw new RuntimeException("Error inserting customer: " + customer, e);
+        }
     }
 
-    public int update(Customer entity){
-        Connection connection = null;
-        int updatedRow = 0;
-        try {
-            connection = dbconnection.connectDatabase();
-            String sql = "UPDATE Customer SET name = ?, email = ?, phone = ? WHERE id = ?";
-            PreparedStatement ps = connection.prepareStatement(sql);
-            ps.setString(1, entity.getName());
-            ps.setString(2, entity.getEmail());
-            ps.setString(3, entity.getPhone());
-            ps.setInt(4, entity.getId());
-            updatedRow = ps.executeUpdate();
+    public int update(Customer customer) {
+        String sql = "UPDATE Customers SET name = ?, email = ?, phone = ? WHERE id = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, customer.getName());
+            pstmt.setString(2, customer.getEmail());
+            pstmt.setString(3, customer.getPhone());
+            pstmt.setInt(4, customer.getId());
+            return pstmt.executeUpdate();
         } catch (SQLException | DatabaseConnectionException e) {
-             System.err.println("Error: " + (e instanceof SQLException ? SQLExceptionHandler((SQLException)e) : e.getMessage()));
-        } finally { closeConnection(connection); }
-        return updatedRow;
+            throw new RuntimeException("Error updating customer: " + customer, e);
+        }
     }
-    
-    public int delete(int id){
-        Connection connection = null;
-        int deletedRow = 0;
-        try {
-            connection = dbconnection.connectDatabase();
-            String sql = "DELETE FROM Customer where id = ?";
-            PreparedStatement ps = connection.prepareStatement(sql);
-            ps.setInt(1, id);
-            deletedRow = ps.executeUpdate();
+
+    public int delete(int id) {
+        String sql = "DELETE FROM Customers WHERE id = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, id);
+            return pstmt.executeUpdate();
         } catch (SQLException | DatabaseConnectionException e) {
-             System.err.println("Error: " + (e instanceof SQLException ? SQLExceptionHandler((SQLException)e) : e.getMessage()));
-        } finally { closeConnection(connection); }
-        return deletedRow;
+            throw new RuntimeException("Error deleting customer by id: " + id, e);
+        }
     }
 }

@@ -1,177 +1,183 @@
-package bookstore.database;
+package com.bookstore.database;
 
 import com.bookstore.model.Book;
-import bookstore.exception.DatabaseConnectionException;
+import com.bookstore.exception.DatabaseConnectionException;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.List;
 
-public class BookDAO extends abstractGenericDAO<Book> {
-    
-    public Book findByID(int id){
-        Connection connection = null;
-        Book book = null;
-        try {
-            connection = dbconnection.connectDatabase();
-            String sql = "SELECT * FROM Book WHERE id = ?";
-            PreparedStatement ps = connection.prepareStatement(sql);
-            ps.setInt(1, id); 
-            ResultSet rs = ps.executeQuery();
+public class BookDAO {
 
-            if (rs.next()) {
-                book = new Book(
-                    rs.getInt("id"), rs.getString("title"), rs.getString("author"),
-                    rs.getDouble("price"), rs.getInt("quantity")
-                );
+    public Book findById(int id) {
+        String sql = "SELECT * FROM Books WHERE id = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, id);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    return new Book(
+                            rs.getInt("id"),
+                            rs.getString("title"),
+                            rs.getString("author"),
+                            rs.getDouble("price"),
+                            rs.getInt("quantity")
+                    );
+                }
             }
         } catch (SQLException | DatabaseConnectionException e) {
-            System.err.println("Error: " + (e instanceof SQLException ? SQLExceptionHandler((SQLException)e) : e.getMessage()));
-        } finally { closeConnection(connection); }
-        return book;
+            throw new RuntimeException("Error finding book by id: " + id, e);
+        }
+        return null;
     }
 
-    public ArrayList<Book> findbyTitle(String title) {
-        Connection connection = null;
-        ArrayList<Book> bookList = new ArrayList<>();
-        
-        try {
-            connection = dbconnection.connectDatabase();
-            // SQL Search: Utilize the LIKE operator for fuzzy/partial-match querying on the title field.
-            String sql = "SELECT * FROM Book WHERE title LIKE ?"; 
-            PreparedStatement ps = connection.prepareStatement(sql);
-            
-            // Parameter Binding: Concatenate the search term with the SQL wildcard characters for fuzzy matching
-            ps.setString(1, "%" + title + "%"); 
-            
-            ResultSet rs = ps.executeQuery();
+    public List<Book> findByTitle(String title) {
+        List<Book> books = new ArrayList<>();
+        String sql = "SELECT * FROM Books WHERE title LIKE ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, "%" + title + "%");
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    books.add(new Book(
+                            rs.getInt("id"),
+                            rs.getString("title"),
+                            rs.getString("author"),
+                            rs.getDouble("price"),
+                            rs.getInt("quantity")
+                    ));
+                }
+            }
+        } catch (SQLException | DatabaseConnectionException e) {
+            throw new RuntimeException("Error finding books by title: " + title, e);
+        }
+        return books;
+    }
 
+    public List<Book> findByAuthor(String author) {
+        List<Book> books = new ArrayList<>();
+        String sql = "SELECT * FROM Books WHERE author LIKE ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, "%" + author + "%");
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    books.add(new Book(
+                            rs.getInt("id"),
+                            rs.getString("title"),
+                            rs.getString("author"),
+                            rs.getDouble("price"),
+                            rs.getInt("quantity")
+                    ));
+                }
+            }
+        } catch (SQLException | DatabaseConnectionException e) {
+            throw new RuntimeException("Error finding books by author: " + author, e);
+        }
+        return books;
+    }
+
+    public int insert(Book book) {
+        try (Connection conn = DBConnection.getConnection()) {
+            return insert(book, conn);
+        } catch (SQLException | DatabaseConnectionException e) {
+            throw new RuntimeException("Error inserting book: " + book, e);
+        }
+    }
+
+    public int insert(Book book, Connection conn) throws SQLException {
+        String sql = "INSERT INTO Books(title, author, price, quantity) VALUES (?,?,?,?)";
+        try (PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            pstmt.setString(1, book.getTitle());
+            pstmt.setString(2, book.getAuthor());
+            pstmt.setDouble(3, book.getPrice());
+            pstmt.setInt(4, book.getQuantity());
+            int affectedRows = pstmt.executeUpdate();
+            if (affectedRows == 0) {
+                throw new SQLException("Creating book failed, no rows affected.");
+            }
+            try (ResultSet generatedKeys = pstmt.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    return generatedKeys.getInt(1);
+                } else {
+                    throw new SQLException("Creating book failed, no ID obtained.");
+                }
+            }
+        }
+    }
+
+    public int update(Book book) {
+        try (Connection conn = DBConnection.getConnection()) {
+            return update(book, conn);
+        } catch (SQLException | DatabaseConnectionException e) {
+            throw new RuntimeException("Error updating book: " + book, e);
+        }
+    }
+
+    public int update(Book book, Connection conn) throws SQLException {
+        String sql = "UPDATE Books SET title = ?, author = ?, price = ?, quantity = ? WHERE id = ?";
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, book.getTitle());
+            pstmt.setString(2, book.getAuthor());
+            pstmt.setDouble(3, book.getPrice());
+            pstmt.setInt(4, book.getQuantity());
+            pstmt.setInt(5, book.getId());
+            return pstmt.executeUpdate();
+        }
+    }
+
+    public int delete(int id) {
+        try (Connection conn = DBConnection.getConnection()) {
+            return delete(id, conn);
+        } catch (SQLException | DatabaseConnectionException e) {
+            throw new RuntimeException("Error deleting book by id: " + id, e);
+        }
+    }
+
+    public int delete(int id, Connection conn) throws SQLException {
+        String sql = "DELETE FROM Books WHERE id = ?";
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, id);
+            return pstmt.executeUpdate();
+        }
+    }
+
+    public List<Book> getAll() {
+        List<Book> books = new ArrayList<>();
+        String sql = "SELECT * FROM Books";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql);
+             ResultSet rs = pstmt.executeQuery()) {
             while (rs.next()) {
-                bookList.add(new Book(
-                    rs.getInt("id"), rs.getString("title"), rs.getString("author"),
-                    rs.getDouble("price"), rs.getInt("quantity")
+                books.add(new Book(
+                        rs.getInt("id"),
+                        rs.getString("title"),
+                        rs.getString("author"),
+                        rs.getDouble("price"),
+                        rs.getInt("quantity")
                 ));
             }
-        }
-        catch (SQLException | DatabaseConnectionException e) {
-            System.err.println("Error: " + (e instanceof SQLException ? SQLExceptionHandler((SQLException)e) : e.getMessage()));
-        }
-        finally {
-            closeConnection(connection);
-        }
-        return bookList;
-    }
-
-    public ArrayList<Book> findbyAuthor(String author) {
-        Connection connection = null;
-        ArrayList<Book> bookList = new ArrayList<>();
-        
-        try {
-            connection = dbconnection.connectDatabase();
-            // SQL Search: Utilize the LIKE operator for fuzzy/partial-match querying on the author name field.
-            String sql = "SELECT * FROM Book WHERE author LIKE ?"; 
-            PreparedStatement ps = connection.prepareStatement(sql);
-            
-            ps.setString(1, "%" + author + "%"); 
-            
-            ResultSet rs = ps.executeQuery();
-
-            while (rs.next()) {
-                bookList.add(new Book(
-                    rs.getInt("id"), rs.getString("title"), rs.getString("author"),
-                    rs.getDouble("price"), rs.getInt("quantity")
-                ));
-            }
-        }
-        catch (SQLException | DatabaseConnectionException e) {
-            System.err.println("Error: " + (e instanceof SQLException ? SQLExceptionHandler((SQLException)e) : e.getMessage()));
-        }
-        finally {
-            closeConnection(connection);
-        }
-        return bookList;
-    }
-    
-
-    public int insert(Book entity){
-        Connection connection = null;
-        int addedRow = 0;
-        try {
-            connection = dbconnection.connectDatabase();
-            String sql = "INSERT INTO Book(id, title, author, price, quantity) VALUES (?,?,?,?,?)" ;
-            PreparedStatement ps = connection.prepareStatement(sql);
-            ps.setInt(1, entity.getId());
-            ps.setString(2, entity.getTitle());
-            ps.setString(3, entity.getAuthor());
-            ps.setDouble(4, entity.getPrice());
-            ps.setInt(5, entity.getQuantity());
-            addedRow = ps.executeUpdate();
         } catch (SQLException | DatabaseConnectionException e) {
-             System.err.println("Error: " + (e instanceof SQLException ? SQLExceptionHandler((SQLException)e) : e.getMessage()));
-        } finally { closeConnection(connection); }
-        return addedRow;
+            System.err.println(e);
+            throw new RuntimeException("Error getting all books", e);
+        }
+        return books;
     }
 
-    public int update(Book entity){
-        Connection connection = null;
-        int updatedRow = 0;
-        try {
-            connection = dbconnection.connectDatabase();
-            String sql = "UPDATE Book SET title = ?, author = ?, price = ?, quantity = ? WHERE id = ?";
-            PreparedStatement ps = connection.prepareStatement(sql);
-            ps.setString(1, entity.getTitle());
-            ps.setString(2, entity.getAuthor());
-            ps.setDouble(3, entity.getPrice());
-            ps.setInt(4, entity.getQuantity());
-            ps.setInt(5, entity.getId());
-            updatedRow = ps.executeUpdate();
+    public int reduceStock(int bookId, int quantityToReduce) {
+        try (Connection conn = DBConnection.getConnection()) {
+            return reduceStock(bookId, quantityToReduce, conn);
         } catch (SQLException | DatabaseConnectionException e) {
-             System.err.println("Error: " + (e instanceof SQLException ? SQLExceptionHandler((SQLException)e) : e.getMessage()));
-        } finally { closeConnection(connection); }
-        return updatedRow;
+            throw new RuntimeException("Error reducing stock for book id: " + bookId, e);
+        }
     }
 
-    public int delete(int id){
-        Connection connection = null;
-        int deletedRow = 0;
-        try {
-            connection = dbconnection.connectDatabase();
-            String sql = "DELETE FROM Book where id = ?";
-            PreparedStatement ps = connection.prepareStatement(sql);
-            ps.setInt(1, id);
-            deletedRow = ps.executeUpdate();
-        } catch (SQLException | DatabaseConnectionException e) {
-             System.err.println("Error: " + (e instanceof SQLException ? SQLExceptionHandler((SQLException)e) : e.getMessage()));
-        } finally { closeConnection(connection); }
-        return deletedRow;
-    }
-    
-    public ArrayList<Book> getAll(){
-        Connection connection = null;
-        ArrayList<Book> book_list = new ArrayList<>();
-        try {
-            connection = dbconnection.connectDatabase();
-            String sql = "SELECT * FROM Book";
-            PreparedStatement ps = connection.prepareStatement(sql);
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                book_list.add(new Book(
-                    rs.getInt("id"), rs.getString("title"), rs.getString("author"),
-                    rs.getDouble("price"), rs.getInt("quantity")
-                ));
-            }
-        } catch (SQLException | DatabaseConnectionException e) {
-             System.err.println("Error: " + (e instanceof SQLException ? SQLExceptionHandler((SQLException)e) : e.getMessage()));
-        } finally { closeConnection(connection); }
-        return book_list;
-    }
-    
-    // Transaction Scope for InvoiceService operations.
-    public int reduceStock(int bookId, int quantityToReduce, Connection connection) throws SQLException {
-        // CRITICAL: Connection Leak. This function needs to ensure the database/resource connection is properly closed/disposed in the finally block.
+    public int reduceStock(int bookId, int quantityToReduce, Connection conn) throws SQLException {
         String sql = "UPDATE Book SET quantity = quantity - ? WHERE id = ? AND quantity >= ?";
-        PreparedStatement ps = connection.prepareStatement(sql);
-        ps.setInt(1, quantityToReduce);
-        ps.setInt(2, bookId);
-        ps.setInt(3, quantityToReduce); 
-        return ps.executeUpdate();
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, quantityToReduce);
+            pstmt.setInt(2, bookId);
+            pstmt.setInt(3, quantityToReduce);
+            return pstmt.executeUpdate();
+        }
     }
 }

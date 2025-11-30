@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns="http://javafx.com/javafx/8.0.171"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.bookstore.controller.InvoicesController"
+      spacing="15">
+
+    <padding>
+        <Insets top="20" right="20" bottom="20" left="20"/>
+    </padding>
+
+    <Label text="Orders Management"
+           style="-fx-font-size: 20; -fx-font-weight: bold;"/>
+
+    <!-- SEARCH BAR -->
+    <HBox spacing="10">
+        <TextField fx:id="searchField"
+                   promptText="Search by Invoice ID or Customer…"
+                   style="-fx-pref-width: 250;"/>
+
+        <Button text="Search"
+                onAction="#onSearch"
+                styleClass="button-primary"/>
+
+        <Button text="Add Invoice"
+                onAction="#onAddInvoice"
+                styleClass="button-primary"/>
+
+        <Button text="Refresh"
+                onAction="#onRefresh"
+                styleClass="button-primary"/>
+    </HBox>
+
+    <!-- TABLE -->
+    <TableView fx:id="invoiceTable" prefHeight="500">
+        <columns>
+            <TableColumn fx:id="colId" text="ID" prefWidth="80"/>
+            <TableColumn fx:id="colCustomer" text="Customer" prefWidth="200"/>
+            <TableColumn fx:id="colTotal" text="Total" prefWidth="120"/>
+            <TableColumn fx:id="colDate" text="Date" prefWidth="150"/>
+            <TableColumn fx:id="colAction" text="Actions" prefWidth="150"/>
+        </columns>
+    </TableView>
+
+</VBox>

@@ -22,6 +22,7 @@
                    style="-fx-pref-width: 250;" />
         <Button text="Search" onAction="#onSearch" styleClass="button-primary"/>
         <Button text="Add Book" onAction="#onAddBook" styleClass="button-primary"/>
+        <Button text="Refresh" onAction="#onRefresh" styleClass="button-primary"/>
     </HBox>
 
     <!-- TABLE -->
@@ -31,6 +32,7 @@
             <TableColumn fx:id="colTitle" text="Title" prefWidth="200"/>
             <TableColumn fx:id="colAuthor" text="Author" prefWidth="150"/>
             <TableColumn fx:id="colPrice" text="Price" prefWidth="100"/>
+            <TableColumn fx:id="colQuantity" text="Quantity" prefWidth="100"/>
             <TableColumn fx:id="colAction" text="Actions" prefWidth="150"/>
         </columns>
     </TableView>
