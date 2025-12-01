@@ -35,4 +35,9 @@ public class DashboardController {
         lblInvoices.setText(String.valueOf(totalInvoices));
         lblCustomers.setText(String.valueOf(totalCustomers));
     }
+    public void refreshDashboard() {
+    lblBooks.setText(String.valueOf(bookService.getTotalBooks()));
+    lblInvoices.setText(String.valueOf(invoiceService.getTotalInvoices()));
+    lblCustomers.setText(String.valueOf(customerService.getTotalCustomers()));
+    }
 }

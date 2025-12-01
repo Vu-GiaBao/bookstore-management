@@ -11,7 +11,6 @@ import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import java.sql.SQLException;
 import java.io.IOException;
 import java.util.Optional;
 

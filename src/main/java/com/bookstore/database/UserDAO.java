@@ -12,9 +12,6 @@ import java.util.List;
 
 public class UserDAO {
 
-    /**
-     * Lấy tất cả user từ database
-     */
     public List<User> getAll() {
         List<User> users = new ArrayList<>();
 
@@ -40,9 +37,6 @@ public class UserDAO {
         return users;
     }
 
-    /**
-     * Lấy 1 user theo id
-     */
     public User getById(int id) {
         String sql = "SELECT id, username, role FROM users WHERE id = ?";
 

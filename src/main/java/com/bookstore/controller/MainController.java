@@ -1,6 +1,7 @@
 package com.bookstore.controller;
 
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.FXML;
 import javafx.scene.layout.AnchorPane;
@@ -13,12 +14,17 @@ public class MainController {
 
     @FXML
     public void initialize() {
-        openDashboard(); // mở sẵn dashboard khi chạy app
+        openDashboard(); 
     }
 
     @FXML
     private void openDashboard() {
         loadView("/com/bookstore/DashboardView.fxml");
+    }
+    
+    @FXML
+    private void onDashboardClick() {
+        showDashboard();
     }
 
     @FXML
@@ -49,4 +55,17 @@ public class MainController {
             e.printStackTrace();
         }
     }
+
+    public void showDashboard() {
+    try {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/bookstore/view/DashboardView.fxml"));
+        Parent root = loader.load();
+
+        DashboardController controller = loader.getController();
+        controller.refreshDashboard(); 
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+}
+
 }

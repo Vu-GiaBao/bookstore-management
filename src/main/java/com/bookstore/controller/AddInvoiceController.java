@@ -98,24 +98,26 @@ public class AddInvoiceController {
             return;
         }
 
-        // ✔ tạo hóa đơn bằng constructor đúng
         Invoice invoice = new Invoice(UUID.randomUUID().toString());
-
         invoice.setCustomerId(c.getId());
         invoice.setUserId(u.getId());
         invoice.setDate(LocalDate.now());
         invoice.setStatus(InvoiceStatus.PENDING);
         invoice.setItems(new ArrayList<>(items));
-        
+
         double total = items.stream()
                 .mapToDouble(InvoiceItem::getSubtotal)
                 .sum();
         invoice.setTotalAmount(total);
 
+        for (InvoiceItem item : items) {
+            bookService.reduceStock(item.getBook().getId(), item.getQuantity());
+        }
         invoiceService.save(invoice);
 
         closeWindow();
     }
+
 
     @FXML
     private void onCancel() {

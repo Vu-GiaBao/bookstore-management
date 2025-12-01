@@ -12,7 +12,7 @@ public class InvoiceItemDAO {
 
     private final BookDAO bookDAO = new BookDAO();
 
-    // ===== Dùng khi đã có Connection sẵn (trong InvoiceService.save) =====
+
     public int[] insertBatch(String invoiceId,
                              List<InvoiceItem> items,
                              Connection conn) throws SQLException {
@@ -82,7 +82,7 @@ public class InvoiceItemDAO {
             while (rs.next()) {
                 int bookId = rs.getInt("book_id");
                 int qty = rs.getInt("quantity");
-                double price = rs.getDouble("price");  // <-- sửa đúng cột
+                double price = rs.getDouble("price"); 
 
                 Book book = bookDAO.findById(bookId);
 

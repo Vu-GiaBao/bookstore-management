@@ -144,8 +144,8 @@ public class CustomerDAO {
             pstmt.setString(1, customer.getName());
             pstmt.setString(2, customer.getEmail());
             pstmt.setString(3, customer.getPhone());
-            pstmt.setString(4, customer.getAddress()); // address ở vị trí 4
-            pstmt.setInt(5, customer.getId());         // id ở vị trí 5
+            pstmt.setString(4, customer.getAddress()); 
+            pstmt.setInt(5, customer.getId());        
 
             return pstmt.executeUpdate();
         } catch (SQLException | DatabaseConnectionException e) {

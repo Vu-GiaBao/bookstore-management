@@ -136,7 +136,7 @@ public class CustomersController {
         controller.setCustomer(customer);
 
         stage.showAndWait();
-        loadCustomers(); // refresh
+        loadCustomers(); 
         customerTable.refresh();
 
         } catch (Exception e) {
@@ -158,7 +158,7 @@ public class CustomersController {
         popup.initModality(Modality.APPLICATION_MODAL);
         popup.showAndWait();
 
-        onRefresh(); // load lại bảng sau khi thêm
+        onRefresh();
         } catch (IOException e) {
         e.printStackTrace();
         showError("Error opening view", "Could not open the add customer view.");

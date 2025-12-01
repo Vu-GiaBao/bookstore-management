@@ -16,7 +16,7 @@ public class EditCustomerController {
     private CustomerService customerService = new CustomerService();
     private Customer customer;
 
-    // gọi từ CustomersController khi mở popup
+
     public void setCustomer(Customer customer) {
         this.customer = customer;
         nameField.setText(customer.getName());

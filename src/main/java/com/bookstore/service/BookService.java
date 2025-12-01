@@ -1,10 +1,10 @@
 package com.bookstore.service;
 
 import com.bookstore.database.BookDAO;
+import com.bookstore.database.DBConnection;
 import com.bookstore.model.Book;
 
-import java.sql.SQLException;
-import java.util.ArrayList;
+import java.sql.Connection;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -57,11 +57,19 @@ public class BookService {
         try {
             return bookDAO.reduceStock(bookId, quantityToReduce) > 0;
         } catch (RuntimeException e) {
-            // In a real application, you would want to log this exception
             e.printStackTrace();
             return false;
         }
     }
+
+    public void increaseStock(int bookId, int quantityToAdd) {
+        try (Connection conn = DBConnection.getConnection()) {
+            new BookDAO().increaseStock(bookId, quantityToAdd, conn);
+        } catch (Exception e) {
+            throw new RuntimeException("Error increasing stock for book id: " + bookId, e);
+        }
+}
+
 
     public List<Book> searchBooks(String keyword) {
         if (keyword == null || keyword.isBlank()) {

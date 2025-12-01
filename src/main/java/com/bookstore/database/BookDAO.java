@@ -172,7 +172,7 @@ public class BookDAO {
     }
 
     public int reduceStock(int bookId, int quantityToReduce, Connection conn) throws SQLException {
-        String sql = "UPDATE Book SET quantity = quantity - ? WHERE id = ? AND quantity >= ?";
+        String sql = "UPDATE Books SET quantity = quantity - ? WHERE id = ? AND quantity >= ?";
         try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setInt(1, quantityToReduce);
             pstmt.setInt(2, bookId);
@@ -180,6 +180,16 @@ public class BookDAO {
             return pstmt.executeUpdate();
         }
     }
+    
+    public int increaseStock(int bookId, int quantityToAdd, Connection conn) throws SQLException {
+        String sql = "UPDATE Books SET quantity = quantity + ? WHERE id = ?";
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, quantityToAdd);
+            pstmt.setInt(2, bookId);
+            return pstmt.executeUpdate();
+        }
+    }
+
     public int countBooks() {
         String sql = "SELECT COUNT(*) FROM books";
         try (Connection conn = DBConnection.getConnection();

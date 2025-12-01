@@ -5,6 +5,7 @@ import com.bookstore.model.InvoiceItem;
 import com.bookstore.model.InvoiceStatus;
 import com.bookstore.database.InvoiceItemDAO;
 import com.bookstore.model.Customer;
+import com.bookstore.service.BookService;
 import com.bookstore.service.CustomerService;
 import com.bookstore.service.InvoiceService;
 
@@ -37,6 +38,7 @@ public class InvoiceDetailController {
     @FXML private Button btnPay;
 
     private Invoice invoice;
+    private List<InvoiceItem> items;
 
     @FXML
     public void initialize() {
@@ -84,8 +86,8 @@ public class InvoiceDetailController {
         lblCustomer.setText(customer != null ? customer.getName() : "Unknown");
 
         InvoiceItemDAO itemDAO = new InvoiceItemDAO();
-        List<InvoiceItem> items = itemDAO.getByInvoiceId(invoice.getInvoiceId());
-        tblItems.setItems(FXCollections.observableArrayList(items));
+        this.items = itemDAO.getByInvoiceId(invoice.getInvoiceId());
+        tblItems.setItems(FXCollections.observableArrayList(this.items));
 
         if (invoice.getStatus() != InvoiceStatus.PENDING) {
             btnPay.setDisable(true);
@@ -96,22 +98,38 @@ public class InvoiceDetailController {
     private void onPay() {
         try {
             InvoiceService service = new InvoiceService();
+            BookService bookService = new BookService();
+            InvoiceItemDAO itemDAO = new InvoiceItemDAO();
+
+
+            List<InvoiceItem> items = itemDAO.getByInvoiceId(invoice.getInvoiceId());
+
+      
+            for (InvoiceItem item : items) {
+                int bookId = item.getBook().getId();
+                int qty = item.getQuantity();
+
+                bookService.reduceStock(bookId, qty);
+            }
+
+    
             service.updateStatus(invoice.getInvoiceId(), InvoiceStatus.PAID);
-
             invoice.setStatus(InvoiceStatus.PAID);
-
             lblStatus.setText("PAID");
             btnPay.setDisable(true);
 
+            // 4. Thông báo
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Payment Success");
-            alert.setHeaderText("Invoice has been marked as PAID.");
+            alert.setHeaderText(null);
+            alert.setContentText("Invoice has been marked as PAID and stock has been updated.");
             alert.showAndWait();
 
         } catch (Exception e) {
-            showError("Error", "Failed to mark invoice as paid.\n" + e.getMessage());
+            showError("Error", "Failed to mark invoice as PAID.\n" + e.getMessage());
         }
     }
+
 
     @FXML
     private void onCancelInvoice() {
@@ -119,22 +137,26 @@ public class InvoiceDetailController {
         alert.setTitle("Cancel Invoice");
         alert.setHeaderText("Are you sure you want to cancel this invoice?");
         alert.setContentText("This action cannot be undone.");
-
         Optional<ButtonType> result = alert.showAndWait();
-        if (result.isPresent() && result.get() == ButtonType.OK) {
 
+        if (result.isPresent() && result.get() == ButtonType.OK) {
             try {
+                // Hoàn stock
+                BookService bs = new BookService();
+                for (InvoiceItem it : items) {
+                    bs.increaseStock(it.getBook().getId(), it.getQuantity());
+                }
+
                 InvoiceService service = new InvoiceService();
                 service.updateStatus(invoice.getInvoiceId(), InvoiceStatus.CANCELLED);
 
                 invoice.setStatus(InvoiceStatus.CANCELLED);
-
                 lblStatus.setText("CANCELLED");
 
                 Alert done = new Alert(Alert.AlertType.INFORMATION);
                 done.setTitle("Cancelled");
                 done.setHeaderText(null);
-                done.setContentText("Invoice has been cancelled.");
+                done.setContentText("Invoice has been cancelled and stock restored.");
                 done.showAndWait();
 
             } catch (Exception e) {
