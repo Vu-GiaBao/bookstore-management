@@ -53,6 +53,7 @@
 
     <HBox spacing="10" alignment="CENTER_RIGHT">
         <Button text="Mark as PAID" fx:id="btnPay" onAction="#onPay"/>
+        <Button text="Cancel Invoice" fx:id="btnCancel" onAction="#onCancelInvoice" />
         <Button text="Close" onAction="#onClose"/>
     </HBox>
 

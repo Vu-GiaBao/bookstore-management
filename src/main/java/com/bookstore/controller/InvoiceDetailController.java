@@ -17,6 +17,7 @@ import javafx.scene.control.*;
 import javafx.stage.Stage;
 
 import java.util.List;
+import java.util.Optional;
 
 public class InvoiceDetailController {
 
@@ -109,6 +110,40 @@ public class InvoiceDetailController {
 
         } catch (Exception e) {
             showError("Error", "Failed to mark invoice as paid.\n" + e.getMessage());
+        }
+    }
+
+    @FXML
+    private void onCancelInvoice() {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Cancel Invoice");
+        alert.setHeaderText("Are you sure you want to cancel this invoice?");
+        alert.setContentText("This action cannot be undone.");
+
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.isPresent() && result.get() == ButtonType.OK) {
+
+            try {
+                InvoiceService service = new InvoiceService();
+                service.updateStatus(invoice.getInvoiceId(), InvoiceStatus.CANCELLED);
+
+                invoice.setStatus(InvoiceStatus.CANCELLED);
+
+                lblStatus.setText("CANCELLED");
+
+                Alert done = new Alert(Alert.AlertType.INFORMATION);
+                done.setTitle("Cancelled");
+                done.setHeaderText(null);
+                done.setContentText("Invoice has been cancelled.");
+                done.showAndWait();
+
+            } catch (Exception e) {
+                Alert err = new Alert(Alert.AlertType.ERROR);
+                err.setTitle("Error");
+                err.setHeaderText("Failed to cancel invoice");
+                err.setContentText(e.getMessage());
+                err.showAndWait();
+            }
         }
     }
 

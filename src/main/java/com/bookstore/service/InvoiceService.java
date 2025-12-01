@@ -58,5 +58,9 @@ public class InvoiceService {
     public void updateStatus(String invoiceId, InvoiceStatus status) {
         invoiceDAO.updateStatus(invoiceId, status);
     }
+    
+    public int getTotalInvoices() {
+        return invoiceDAO.countInvoices();
+    }
 
 }

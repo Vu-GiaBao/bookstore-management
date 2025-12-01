@@ -46,6 +46,10 @@ public class BookService {
         return bookDAO.delete(id) > 0;
     }
 
+    public int getTotalBooks() {
+        return bookDAO.countBooks();
+    }
+
     public boolean reduceStock(int bookId, int quantityToReduce) {
         if (quantityToReduce <= 0) {
             return false;

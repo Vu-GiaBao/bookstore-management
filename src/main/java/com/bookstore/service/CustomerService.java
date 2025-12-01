@@ -50,5 +50,8 @@ public class CustomerService {
     public Customer findCustomerById(int id) {
         return customerDAO.findById(id);
     }
+    public int getTotalCustomers() {
+        return customerDAO.countCustomers();
+    }
 
 }
