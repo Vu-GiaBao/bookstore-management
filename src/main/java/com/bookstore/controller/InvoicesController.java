@@ -10,6 +10,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.*;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -24,6 +25,8 @@ public class InvoicesController {
     @FXML private TableColumn<Invoice, String> colCustomer;
     @FXML private TableColumn<Invoice, Double> colTotal;
     @FXML private TableColumn<Invoice, String> colDate;
+    @FXML private TableColumn<Invoice, String> colStatus;
+
     @FXML private TableColumn<Invoice, Void> colAction;
 
     private final InvoiceService invoiceService = new InvoiceService();
@@ -51,7 +54,9 @@ public class InvoicesController {
         colDate.setCellValueFactory(cell ->
             new javafx.beans.property.SimpleStringProperty(cell.getValue().getDate().toString())
         );
-
+        colStatus.setCellValueFactory(data ->
+            new SimpleStringProperty(data.getValue().getStatus().name()));
+            
         initActionButtons();
 
         loadInvoices();
@@ -141,19 +146,13 @@ public class InvoicesController {
         }
     }
 
-    private void openInvoiceDetail(Invoice invoice) {
+        private void openInvoiceDetail(Invoice invoice) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/bookstore/InvoiceDetailView.fxml"));
             Parent view = loader.load();
 
-            // Set data into detail controller
-            Object controller = loader.getController();
-            try {
-                controller.getClass()
-                        .getMethod("setInvoice", Invoice.class)
-                        .invoke(controller, invoice);
-            } catch (Exception ignored) {}
-
+            InvoiceDetailController controller = loader.getController();
+            controller.setInvoice(invoice); 
             Stage stage = new Stage();
             stage.setScene(new Scene(view));
             stage.initModality(Modality.APPLICATION_MODAL);
@@ -162,7 +161,8 @@ public class InvoicesController {
             stage.showAndWait();
 
         } catch (Exception e) {
-            showError("Error", "Could not open invoice detail view.\n" + e.getMessage());
+            e.printStackTrace();
+            showError("Error", "Could not open invoice detail view.\n\n" + e.getMessage());
         }
     }
 

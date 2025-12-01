@@ -106,7 +106,7 @@ public class AddInvoiceController {
         invoice.setDate(LocalDate.now());
         invoice.setStatus(InvoiceStatus.PENDING);
         invoice.setItems(new ArrayList<>(items));
-
+        
         double total = items.stream()
                 .mapToDouble(InvoiceItem::getSubtotal)
                 .sum();

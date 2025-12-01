@@ -16,7 +16,7 @@ public class InvoiceItemDAO {
     public int[] insertBatch(String invoiceId,
                              List<InvoiceItem> items,
                              Connection conn) throws SQLException {
-        String sql = "INSERT INTO invoiceitem (invoice_id, book_id, quantity, price_at_sale) " +
+        String sql = "INSERT INTO invoiceitem (invoice_id, book_id, quantity, price) " +
                      "VALUES (?, ?, ?, ?)";
 
         try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -24,7 +24,7 @@ public class InvoiceItemDAO {
                 pstmt.setString(1, invoiceId);
                 pstmt.setInt(2, item.getBook().getId());
                 pstmt.setInt(3, item.getQuantity());
-                pstmt.setDouble(4, item.getBook().getPrice()); // giá tại thời điểm bán
+                pstmt.setDouble(4, item.getBook().getPrice());
                 pstmt.addBatch();
             }
             return pstmt.executeBatch();
@@ -68,4 +68,33 @@ public class InvoiceItemDAO {
 
         return items;
     }
+
+     public List<InvoiceItem> getByInvoiceId(String invoiceId) {
+        List<InvoiceItem> result = new ArrayList<>();
+        String sql = "SELECT * FROM invoiceitem WHERE invoice_id = ?";
+
+        try (Connection conn = DBConnection.getConnection();
+            PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, invoiceId);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                int bookId = rs.getInt("book_id");
+                int qty = rs.getInt("quantity");
+                double price = rs.getDouble("price");  // <-- sửa đúng cột
+
+                Book book = bookDAO.findById(bookId);
+
+                // Dùng constructor đầy đủ
+                result.add(new InvoiceItem(book, qty, price));
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return result;
+    }
+
 }

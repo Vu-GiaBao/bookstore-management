@@ -13,7 +13,7 @@
         <Insets top="20" right="20" bottom="20" left="20"/>
     </padding>
 
-    <Label text="Orders Management"
+    <Label text="📥 Invoices Management"
            style="-fx-font-size: 20; -fx-font-weight: bold;"/>
 
     <!-- SEARCH BAR -->
@@ -42,6 +42,7 @@
             <TableColumn fx:id="colCustomer" text="Customer" prefWidth="200"/>
             <TableColumn fx:id="colTotal" text="Total" prefWidth="120"/>
             <TableColumn fx:id="colDate" text="Date" prefWidth="150"/>
+            <TableColumn fx:id="colStatus" text="Status" prefWidth="120" />
             <TableColumn fx:id="colAction" text="Actions" prefWidth="150"/>
         </columns>
     </TableView>

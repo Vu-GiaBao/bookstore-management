@@ -3,29 +3,54 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.control.*?>
+<?import javafx.geometry.Insets?>
 
 <VBox xmlns="http://javafx.com/javafx/8.0.171"
       xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="com.bookstore.controller.CustomersController">
+      fx:controller="com.bookstore.controller.CustomersController"
+      spacing="15">
 
-    <Label text="Customers Management" style="-fx-font-size: 20; -fx-font-weight: bold"/>
+    <padding>
+        <Insets top="20" right="20" bottom="20" left="20"/>
+    </padding>
 
+    <!-- TITLE -->
+    <Label text="👥 Customers Management"
+           style="-fx-font-size: 20; -fx-font-weight: bold;"/>
+
+    <!-- SEARCH BAR -->
     <HBox spacing="10">
-        <TextField fx:id="searchField" promptText="Search by name..."/>
-        <Button text="Search" onAction="#onSearch"/>
-        <Button text="Add" onAction="#onAddCustomer"/>
-        <Button text="Refresh" onAction="#onRefresh"/>
+
+        <TextField fx:id="searchField" 
+                   promptText="Search by name..."
+                   style="-fx-pref-width: 250;"/>
+
+        <Button text="Search"
+                onAction="#onSearch"
+                styleClass="button-primary"/>
+
+        <Button text="Add"
+                onAction="#onAddCustomer"
+                styleClass="button-primary"/>
+
+        <Button text="Refresh"
+                onAction="#onRefresh"
+                styleClass="button-primary"/>
+
     </HBox>
 
-    <TableView fx:id="customerTable">
+    <!-- TABLE -->
+    <TableView fx:id="customerTable" prefHeight="500">
+
         <columns>
-            <TableColumn fx:id="colId" text="ID" prefWidth="50"/>
-            <TableColumn fx:id="colName" text="Name" prefWidth="150"/>
-            <TableColumn fx:id="colEmail" text="Email" prefWidth="200"/>
-            <TableColumn fx:id="colPhone" text="Phone" prefWidth="120"/>
-            <TableColumn fx:id="colAddress" text="Address" prefWidth="200"/>
-            <TableColumn fx:id="colAction" text="Actions" prefWidth="150"/>
+            <TableColumn fx:id="colId"        text="ID"      prefWidth="60"/>
+            <TableColumn fx:id="colName"      text="Name"    prefWidth="150"/>
+            <TableColumn fx:id="colEmail"     text="Email"   prefWidth="200"/>
+            <TableColumn fx:id="colPhone"     text="Phone"   prefWidth="120"/>
+            <TableColumn fx:id="colAddress"   text="Address" prefWidth="200"/>
+            <TableColumn fx:id="colAction"    text="Actions" prefWidth="150"/>
         </columns>
+
     </TableView>
 
 </VBox>

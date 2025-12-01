@@ -3,9 +3,9 @@ package com.bookstore.database;
 import com.bookstore.exception.DatabaseConnectionException;
 import com.bookstore.model.*;
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-
 public class InvoiceDAO {
 
     public int insert(Invoice invoice, Connection conn) throws SQLException {
@@ -35,61 +35,85 @@ public class InvoiceDAO {
         return pstmt.executeUpdate();
     }
     public void delete(String id) {
-    String sql = "DELETE FROM invoice WHERE id = ?";
+        String sql = "DELETE FROM invoice WHERE id = ?";
 
-    try (Connection conn = DBConnection.getConnection();
-         PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        try (Connection conn = DBConnection.getConnection();
+            PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-        pstmt.setString(1, id);
-        pstmt.executeUpdate();
+            pstmt.setString(1, id);
+            pstmt.executeUpdate();
 
-    } catch (SQLException | DatabaseConnectionException e) {
-        throw new RuntimeException("Error deleting invoice: " + id, e);
+        } catch (SQLException | DatabaseConnectionException e) {
+            throw new RuntimeException("Error deleting invoice: " + id, e);
+        }
     }
-}
-public List<Invoice> getAll() {
-    List<Invoice> invoices = new ArrayList<>();
-    String sql = "SELECT * FROM invoice";
 
-    try (Connection conn = DBConnection.getConnection();
-         PreparedStatement pstmt = conn.prepareStatement(sql);
-         ResultSet rs = pstmt.executeQuery()) {
+    public List<Invoice> getAll() {
+        List<Invoice> list = new ArrayList<>();
+        String sql = "SELECT invoice_id, customer_id, user_id, invoice_date, total_amount, status FROM invoice";
 
-        while (rs.next()) {
-            invoices.add(new Invoice(
-                    rs.getString("id"),
-                    rs.getDate("invoice_date").toLocalDate(),
-                    rs.getDouble("total_amount"),
-                    InvoiceStatus.valueOf(rs.getString("status")),
-                    rs.getInt("customer_id"),
-                    rs.getInt("user_id")
-            ));
+        try (Connection conn = DBConnection.getConnection();
+            PreparedStatement stm = conn.prepareStatement(sql);
+            ResultSet rs = stm.executeQuery()) {
+
+            while (rs.next()) {
+
+                String invoiceId = rs.getString("invoice_id");
+                int customerId = rs.getInt("customer_id");
+                int userId = rs.getInt("user_id");
+                LocalDate date = rs.getDate("invoice_date").toLocalDate();
+                double total = rs.getDouble("total_amount");
+                String statusStr = rs.getString("status");
+
+                InvoiceStatus status = InvoiceStatus.valueOf(statusStr);
+
+                Invoice inv = new Invoice(invoiceId, date, total, status, customerId, userId);
+                list.add(inv);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
-    } catch (SQLException | DatabaseConnectionException e) {
-        throw new RuntimeException("Error getting all invoices", e);
+    return list;
+}
+
+
+
+    public int insert(Invoice invoice) {
+        String sql = "INSERT INTO invoice(invoice_id, customer_id, user_id, invoice_date, total_amount, status) "
+                + "VALUES (?, ?, ?, ?, ?, ?)";
+
+        try (Connection conn = DBConnection.getConnection();
+            PreparedStatement pstm = conn.prepareStatement(sql)) {
+
+            pstm.setString(1, invoice.getInvoiceId());
+            pstm.setInt(2, invoice.getCustomerId());
+            pstm.setInt(3, invoice.getUserId());
+            pstm.setDate(4, Date.valueOf(invoice.getDate()));
+            pstm.setDouble(5, invoice.getTotalAmount());
+            pstm.setString(6, invoice.getStatus().name());
+
+            return pstm.executeUpdate();
+
+        } catch (SQLException | DatabaseConnectionException e) {
+            throw new RuntimeException("Error inserting invoice", e);
+        }
     }
 
-    return invoices;
-}
-public int insert(Invoice invoice) {
-    String sql = "INSERT INTO invoice(customer_id, user_id, invoice_date, total_amount, status) "
-               + "VALUES (?, ?, ?, ?, ?)";
+    public void updateStatus(String invoiceId, InvoiceStatus status) {
+        String sql = "UPDATE invoice SET status = ? WHERE invoice_id = ?";
 
-    try (Connection conn = DBConnection.getConnection();
-         PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        try (Connection conn = DBConnection.getConnection();
+            PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-        pstmt.setInt(1, invoice.getCustomerId());
-        pstmt.setInt(2, invoice.getUserId());
-        pstmt.setDate(3, Date.valueOf(invoice.getDate()));
-        pstmt.setDouble(4, invoice.getTotalAmount());
-        pstmt.setString(5, invoice.getStatus().name());
+            stmt.setString(1, status.name());
+            stmt.setString(2, invoiceId);
+            stmt.executeUpdate();
 
-        return pstmt.executeUpdate();
-
-    } catch (SQLException | DatabaseConnectionException e) {
-        throw new RuntimeException("Error inserting invoice", e);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
-}
 
 }

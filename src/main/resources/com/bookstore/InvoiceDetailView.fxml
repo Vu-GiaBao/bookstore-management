@@ -1,38 +1,59 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
 
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<VBox spacing="20" xmlns="http://javafx.com/javafx/21.0.1"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.bookstore.controller.InvoiceDetailController">
 
-<AnchorPane xmlns:fx="http://javafx.com/fxml"
-            fx:controller="com.bookstore.controller.InvoiceDetailController"
-            prefWidth="450" prefHeight="350">
+    <padding>
+        <javafx.geometry.Insets top="20" right="20" bottom="20" left="20"/>
+    </padding>
 
-    <VBox spacing="10" padding="20">
-        <Label text="Invoice Details" style="-fx-font-size: 20px; -fx-font-weight: bold;"/>
+    <Label text="Invoice Details" style="-fx-font-size: 22px; -fx-font-weight: bold"/>
 
-        <GridPane hgap="10" vgap="10">
-            <columnConstraints>
-                <ColumnConstraints halignment="RIGHT" minWidth="120"/>
-                <ColumnConstraints halignment="LEFT"/>
-            </columnConstraints>
+    <GridPane hgap="10" vgap="10">
+        <columnConstraints>
+            <ColumnConstraints halignment="RIGHT" minWidth="120"/>
+            <ColumnConstraints halignment="LEFT"/>
+        </columnConstraints>
 
-            <Label text="Invoice ID:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
-            <Label fx:id="lblId" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+        <Label text="Invoice ID:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+        <Label fx:id="lblId" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
 
-            <Label text="Customer:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
-            <Label fx:id="lblCustomer" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+        <Label text="Customer:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+        <Label fx:id="lblCustomer" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
 
-            <Label text="Date:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
-            <Label fx:id="lblDate" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+        <Label text="Date:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+        <Label fx:id="lblDate" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
 
-            <Label text="Total Amount:" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
-            <Label fx:id="lblTotal" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+        <Label text="Status:" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+        <Label fx:id="lblStatus" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
 
-            <Label text="Status:" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
-            <Label fx:id="lblStatus" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
-        </GridPane>
+        <Label text="Total Amount:" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
+        <Label fx:id="lblTotal" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
+    </GridPane>
 
-        <Button text="Close" onAction="#onClose" prefWidth="100"/>
-    </VBox>
-</AnchorPane>
+    <Label text="Purchased Books:" style="-fx-font-size: 18px; -fx-font-weight: bold"/>
+
+    <TableView fx:id="tblItems" prefHeight="250">
+        <columns>
+            <TableColumn text="Book" fx:id="colBook"/>
+            <TableColumn text="Quantity" fx:id="colQty"/>
+            <TableColumn text="Price" fx:id="colPrice"/>
+            <TableColumn text="Subtotal" fx:id="colSubtotal"/>
+        </columns>
+    </TableView>
+
+    <HBox spacing="10" alignment="CENTER_RIGHT">
+        <Button text="Mark as PAID" fx:id="btnPay" onAction="#onPay"/>
+        <Button text="Close" onAction="#onClose"/>
+    </HBox>
+
+</VBox>
