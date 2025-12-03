@@ -7,8 +7,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CustomerDAO {
-
+public class CustomerDAO extends abstractGenericDAO<Customer> {
     public Customer findById(int id) {
         String sql = "SELECT * FROM Customers WHERE id = ?";
         try (Connection conn = DBConnection.getConnection();

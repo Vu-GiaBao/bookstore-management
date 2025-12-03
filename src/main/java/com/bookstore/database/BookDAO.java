@@ -6,8 +6,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BookDAO {
-
+public class BookDAO extends abstractGenericDAO<Book> {
     public Book findById(int id) {
         String sql = "SELECT * FROM Books WHERE id = ?";
         try (Connection conn = DBConnection.getConnection();

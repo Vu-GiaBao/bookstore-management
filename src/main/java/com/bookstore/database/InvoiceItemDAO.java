@@ -8,7 +8,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class InvoiceItemDAO {
+public class InvoiceItemDAO extends abstractGenericDAO<InvoiceItem> {
 
     private final BookDAO bookDAO = new BookDAO();
 

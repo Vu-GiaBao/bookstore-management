@@ -6,8 +6,7 @@ import java.sql.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-public class InvoiceDAO {
-
+public class InvoiceDAO extends abstractGenericDAO<Invoice> {
     public int insert(Invoice invoice, Connection conn) throws SQLException {
         String sql = "INSERT INTO invoice (invoice_code, customer_id, user_id, invoice_date, total_amount, status) "
                    + "VALUES (?, ?, ?, ?, ?, ?)";
