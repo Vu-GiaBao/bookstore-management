@@ -23,11 +23,11 @@ public class BookService {
         return bookDAO.getAll();
     }
 
-    public Book getBookById(int id) {
+    public Book getBooks(int id) {
         return bookDAO.findById(id);
     }
 
-    public List<Book> getBooksByTitle(String title) {
+    public List<Book> getBooks(String title) {
         return bookDAO.findByTitle(title);
     }
 
